@@ -1,0 +1,137 @@
+<!-- Created by Erion Nezha — © 2026 All rights reserved -->
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Llogaritësi i Moshës — Demo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#d9f2d9;background:linear-gradient(135deg,#c8e6c9,#e8f5e9);color:#1b2a1b;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px}
+.card{background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.12);padding:28px 26px;width:100%;max-width:560px}
+h1{text-align:center;font-size:1.5rem;margin-bottom:4px;color:#0d3b0d}
+p.sub{text-align:center;color:#5a7a5a;font-size:.88rem;margin-bottom:18px}
+.sim{background:#fff8e1;border:1px solid #ffcc02;color:#7a5b00;border-radius:8px;padding:10px 14px;font-size:.83rem;margin-bottom:18px;line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+fieldset{border:1px solid #c5e1c5;border-radius:10px;padding:14px}
+legend{background:#1565c0;color:#fff;padding:3px 14px;border-radius:12px;font-size:.85rem;font-weight:600}
+label{display:block;font-size:.82rem;color:#2e5b2e;margin:8px 0 3px}
+input[type=text]{width:100%;padding:9px 10px;border:1px solid #a5c8a5;border-radius:7px;font-size:.95rem}
+input[type=text]:focus{outline:2px solid #66bb6a;border-color:#66bb6a}
+.btnrow{display:flex;gap:12px;justify-content:center;margin:20px 0 6px}
+button{border:none;border-radius:9px;padding:12px 22px;font-size:.95rem;font-weight:700;cursor:pointer}
+#calc{background:#d32f2f;color:#fff}
+#clear{background:#616161;color:#fff}
+button:hover{filter:brightness(1.1)}
+.result{margin-top:6px;border-top:2px dashed #c5e1c5;padding-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.result .box{background:#e8f5e9;border-radius:8px;padding:10px;text-align:center}
+.result .box b{display:block;font-size:1.4rem;color:#0d3b0d}
+.result .box span{font-size:.78rem;color:#5a7a5a}
+#error{display:none;background:#ffebee;border:1px solid #e53935;color:#b71c1c;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.88rem}
+footer{margin-top:16px;color:#5a7a5a;font-size:.85rem}
+footer strong{color:#2e5b2e}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>🧮 Llogaritësi i Moshës</h1>
+<p class="sub">Port web i aplikacionit origjinal Python + tkinter</p>
+<div class="sim">⚠️ <strong>SIMULIM</strong> — kjo demo ekzekutohet në browser me të njëjtën logjikë llogaritjeje si origjinali. Programi origjinal kërkon <strong>Python + tkinter</strong> (shiko <em>original/Age_Calculator_GUI.py</em>).</div>
+<div id="error">⚠️ Gabim në të dhëna — plotëso të gjitha fushat!</div>
+<div class="grid">
+<fieldset>
+<legend>Data e lindjes</legend>
+<label>Dita</label><input type="text" id="day" inputmode="numeric" placeholder="p.sh. 15">
+<label>Muaji</label><input type="text" id="month" inputmode="numeric" placeholder="p.sh. 3">
+<label>Viti</label><input type="text" id="year" inputmode="numeric" placeholder="p.sh. 1995">
+</fieldset>
+<fieldset>
+<legend>Data e dhënë</legend>
+<label>Dita e dhënë</label><input type="text" id="gday" inputmode="numeric" placeholder="p.sh. 23">
+<label>Muaji i dhënë</label><input type="text" id="gmonth" inputmode="numeric" placeholder="p.sh. 9">
+<label>Viti i dhënë</label><input type="text" id="gyear" inputmode="numeric" placeholder="p.sh. 2026">
+</fieldset>
+</div>
+<div class="btnrow">
+<button id="calc">Llogarit moshën</button>
+<button id="clear">Pastro të gjitha</button>
+</div>
+<div class="result">
+<div class="box"><b id="rYear">–</b><span>Vite</span></div>
+<div class="box"><b id="rMonth">–</b><span>Muaj</span></div>
+<div class="box"><b id="rDay">–</b><span>Ditë</span></div>
+</div>
+</div>
+<footer>Krijuar nga <strong>Erion Nezha</strong> — © 2026</footer>
+<script>
+(function(){
+"use strict";
+// --- port besnik i Age_Calculator_GUI.py ---
+var ids=['day','month','year','gday','gmonth','gyear'];
+function val(id){return document.getElementById(id).value.trim();}
+function set(id,v){document.getElementById(id).value=v;}
+function showError(msg){
+  var e=document.getElementById('error');
+  e.textContent='⚠️ '+msg; e.style.display='block';
+}
+function hideError(){document.getElementById('error').style.display='none';}
+
+// checkError(): nëse ndonjë fushë është bosh -> mesazh gabimi + clearAll()
+function checkError(){
+  for(var i=0;i<ids.length;i++){
+    if(val(ids[i])===''){
+      showError('Gabim në të dhëna — plotëso të gjitha fushat!');
+      clearAll();
+      return -1;
+    }
+  }
+  return 0;
+}
+
+// clearAll(): pastron të gjitha fushat (si në origjinal)
+function clearAll(){
+  ids.forEach(function(id){set(id,'');});
+  document.getElementById('rYear').textContent='–';
+  document.getElementById('rMonth').textContent='–';
+  document.getElementById('rDay').textContent='–';
+  hideError();
+}
+
+// calculateAge(): e njëjta logjikë huazimi si në origjinal
+function calculateAge(){
+  hideError();
+  if(checkError()===-1){return;}
+  var birth_day=parseInt(val('day'),10),
+      birth_month=parseInt(val('month'),10),
+      birth_year=parseInt(val('year'),10),
+      given_day=parseInt(val('gday'),10),
+      given_month=parseInt(val('gmonth'),10),
+      given_year=parseInt(val('gyear'),10);
+  if([birth_day,birth_month,birth_year,given_day,given_month,given_year].some(isNaN)){
+    showError('Vendos vetëm numra në fusha!');
+    return;
+  }
+  var month=[31,28,31,30,31,30,31,31,30,31,30,31];
+  if(birth_day>given_day){
+    given_month=given_month-1;
+    given_day=given_day+month[birth_month-1];
+  }
+  if(birth_month>given_month){
+    given_year=given_year-1;
+    given_month=given_month+12;
+  }
+  var calculated_day=given_day-birth_day;
+  var calculated_month=given_month-birth_month;
+  var calculated_year=given_year-birth_year;
+  document.getElementById('rDay').textContent=calculated_day;
+  document.getElementById('rMonth').textContent=calculated_month;
+  document.getElementById('rYear').textContent=calculated_year;
+}
+
+document.getElementById('calc').addEventListener('click',calculateAge);
+document.getElementById('clear').addEventListener('click',clearAll);
+})();
+</script>
+</body>
+</html>
